@@ -21,21 +21,35 @@ final class TestChallengeUITests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    
+    func test_ControllerInitialization() {
         let app = XCUIApplication()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
+        let tableView = app.tables["tableView"]
+        let navigation = app.navigationBars
+        
+        XCTAssertTrue(tableView.exists)
+        XCTAssertTrue(tableView.tableRows.count == 0)
+        XCTAssertTrue(navigation.element.exists)
+        XCTAssert(app.staticTexts["Dog Facts"].exists)
     }
-
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
+    
+    func test_TableView() {
+        let app = XCUIApplication()
+        app.launch()
+        
+        let tableView = app.tables["tableView"]
+        let exists = NSPredicate(format: "exists == 1")
+        
+        let firstTableCell = tableView.cells.firstMatch
+        let expectation = expectation(for: exists, evaluatedWith: firstTableCell)
+        waitForExpectations(timeout: 10, handler: nil)
+        
+        XCTAssertTrue(firstTableCell.exists)
+        expectation.fulfill()
+        
+        let cellCount = tableView.cells.count
+        XCTAssert(cellCount == 10)
     }
 }
